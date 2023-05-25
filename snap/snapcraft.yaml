@@ -1,0 +1,45 @@
+name: powerswitch
+version: '0.1'
+summary: Reboot or shutdown Ubuntu Core system using curl.
+description: |
+  This snap provides a simple set of API to reboot or shutdown an Ubuntu Core system using curl.
+  To reboot, use: curl http://localhost:3500/reboot
+  To shutdown, use: curl http://localhost:3500/poweroff
+
+grade: stable
+#confinement: devmode #This is for development only. Unconfined snap environment. For production, use strict.
+confinement: strict #This is for production only.
+base: core22
+
+apps:
+  api:
+    command: bin/flask-wrapper
+    daemon: simple
+    restart-condition: always
+    plugs: [network-bind, shutdown]
+    environment:
+      FLASK_APP: ./api.py
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+
+parts:
+  #Copy the bash scripts
+  bash-scripts:
+    plugin: dump
+    source: bin
+    organize:
+      pwr_mgmt: bin/
+
+  #Install all packages from requirements
+  python-packages:
+    plugin: python
+    source: flask
+    python-requirements: ['requirements.txt']
+
+  #Copy the flask api
+  flask-server:
+    plugin: dump
+    source: flask
+    organize:
+      api.py: bin/
+      flask-wrapper: bin/

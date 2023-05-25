@@ -1,0 +1,35 @@
+#! /bin/sh
+
+set -e
+
+if [ $(id -u) -ne 0 ]; then
+    echo "This script must be run as root" 1>&2
+    exit 1
+elif [ -z "$1" ]; then
+    echo "Usage: $0 <reboot|suspend|hibernate|poweroff>" 1>&2
+    exit 1
+elif [ "$1" = "reboot" ]; then
+    echo "Rebooting system..."
+    #---SYSTEM REBOOT
+    dbus-send --system --print-reply \
+        --dest=org.freedesktop.login1 /org/freedesktop/login1 \
+        "org.freedesktop.login1.Manager.Reboot" boolean:true
+elif [ "$1" = "halt" ]; then
+    echo "Halting system..."
+    #---SYSTEM SUSPEND
+    dbus-send --system --print-reply \
+        --dest=org.freedesktop.login1 /org/freedesktop/login1 \
+        "org.freedesktop.login1.Manager.Suspend" boolean:true
+elif [ "$1" = "hibernate" ]; then
+    echo "Suspending system..."
+    #---SYSTEM HIBERNATE
+    dbus-send --system --print-reply \
+        --dest=org.freedesktop.login1 /org/freedesktop/login1 \
+        "org.freedesktop.login1.Manager.Hibernate" boolean:true
+elif [ "$1" = "poweroff" ]; then
+    echo "Powering off system..."
+    #---SYSTEM SHUTDOWN
+    dbus-send --system --print-reply \
+        --dest=org.freedesktop.login1 /org/freedesktop/login1 \
+        "org.freedesktop.login1.Manager.PowerOff" boolean:true
+fi
