@@ -1,15 +1,28 @@
 name: powerswitch
-version: '0.1'
+base: core22
+version: '0.2'
 summary: Reboot or shutdown Ubuntu Core system using curl.
 description: |
   This snap provides a simple set of API to reboot or shutdown an Ubuntu Core system using curl.
   To reboot, use: curl http://localhost:3500/reboot
   To shutdown, use: curl http://localhost:3500/poweroff
 
-grade: stable
+#grade: devel #This is for development only.
 #confinement: devmode #This is for development only. Unconfined snap environment. For production, use strict.
+grade: stable #This is for releasing in the stable channel.
 confinement: strict #This is for production only.
-base: core22
+
+architectures:
+  - build-on: [amd64]
+    build-for: [amd64]
+  - build-on: [amd64, arm64]
+    build-for: [arm64]
+  - build-on: [amd64, armhf]
+    build-for: [armhf]
+  - build-on: [amd64, ppc64el]
+    build-for: [ppc64el]
+  - build-on: [amd64, s390x]
+    build-for: [s390x]
 
 apps:
   api:
